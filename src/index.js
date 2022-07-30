@@ -40,11 +40,11 @@ function clearUI() {
     refs.countryCard.innerHTML = '';
 }
 
-function renderCountriesList(countries) {
+function renderCountriesList({name, flags}) {
     return `
     <li class="country-list__item">
-        <img src="${countries.flags.svg}" class="country-list__flag" width="70px" height="40px">
-        <h3 class="country-list__name">${countries.name.common}</h3>
+        <img src="${flags.svg}" class="country-list__flag" width="70px" height="40px">
+        <h3 class="country-list__name">${name.common}</h3>
     </li>`;  
 }
 
@@ -54,15 +54,15 @@ function renderCountryCard({ name, capital, population, languages, flags }) {
     <h2 class="country-info__name">${name.common}</h2>
     <img src="${flags.svg}" class="country-info__flag" width="220px" height="140px">
     <ul class="country-info__features">
-        <li>
+        <li class="country-info__feature">
             <h3>Capital:&nbsp;</h3>
             <p>${capital}</p>
         </li>
-        <li>
+        <li class="country-info__feature">
             <h3>Population:&nbsp;</h3>
             <p>${population}</p>
         </li>
-        <li>
+        <li class="country-info__feature">
             <h3>Languages:&nbsp;</h3>
             <p>${Object.values(languages)}</p>
         </li>
