@@ -9,7 +9,6 @@ const refs = {
     countryList: document.querySelector('.country-list'),
     countryCard: document.querySelector('.country-info')
 }
-let countryPull = '';
 
 refs.input.addEventListener('input', debounce(onInputCountrySearch, DEBOUNCE_DELAY));
 
@@ -21,11 +20,17 @@ function onInputCountrySearch(event) {
 
     fetchCountries(name)
         .then(countries => {
-            if (countries.length >= 10) Notify.info('Too many matches found. Please enter a more specific name.');
+            if (countries.length > 10) Notify.info('Too many matches found. Please enter a more specific name.');
             else if (countries.length === 1) {
                 refs.countryCard.innerHTML = renderCountryCard(countries[0]);
             }
-            else renderCountriesList(countries);
+            else {
+                let countriesListMarkup = '';
+                countries.map(country => {
+                    countriesListMarkup += renderCountriesList(country);
+                });
+                refs.countryList.insertAdjacentHTML('afterbegin', countriesListMarkup);
+            } 
         })
         .catch(error => Notify.failure('Oops, there is no country with that name'))
 }
@@ -36,20 +41,18 @@ function clearUI() {
 }
 
 function renderCountriesList(countries) {
-    countries.forEach(country => {
-    countryPull += `<li class="country-list__item">
-                        <img src="${country.flags.svg}" class="country-list__flag" width="70px" height="40px">
-                        <p class="country-list__name">${country.name.common}</p>
-                    </li>`;  
-    });
-    refs.countryList.innerHTML = countryPull;
+    return `
+    <li class="country-list__item">
+        <img src="${countries.flags.svg}" class="country-list__flag" width="70px" height="40px">
+        <h3 class="country-list__name">${countries.name.common}</h3>
+    </li>`;  
 }
 
-function renderCountryCard( {name, capital, population, languages, flags} ) {
+function renderCountryCard({ name, capital, population, languages, flags }) {
     return `
     <div class="country-info__card">
     <h2 class="country-info__name">${name.common}</h2>
-    <img src="${flags.svg}" class="country-info__flag" width="240px" height="160px">
+    <img src="${flags.svg}" class="country-info__flag" width="220px" height="140px">
     <ul class="country-info__features">
         <li>
             <h3>Capital:&nbsp;</h3>
@@ -61,7 +64,7 @@ function renderCountryCard( {name, capital, population, languages, flags} ) {
         </li>
         <li>
             <h3>Languages:&nbsp;</h3>
-            <p>${languages}</p>
+            <p>${Object.values(languages)}</p>
         </li>
     </ul>
     </div>
